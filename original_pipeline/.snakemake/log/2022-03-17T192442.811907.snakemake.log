@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 5 of /home/rictuar/coding_projects/fiehn_work/cfmid/cfmid_redo/workflow/code/original_pipeline/Snakefile:
+Missing input files for rule subset:
+../../../resoruces/overall_similarity_result_dot_product_[M+H]+.csv

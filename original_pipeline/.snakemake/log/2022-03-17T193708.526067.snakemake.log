@@ -1,0 +1,21 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	choose_best_cfmid_score
+	1
+Select jobs to execute...
+
+[Thu Mar 17 19:37:08 2022]
+rule choose_best_cfmid_score:
+    input: ../../../results/[M+H]+/qtof/precursor_no/binned_distances_[M+H]+_qtof_precursor_no.txt
+    output: ../../../results/[M+H]+/qtof/precursor_no/best_cfmid_match_[M+H]+_qtof_precursor_no.txt
+    jobid: 0
+    wildcards: adduct=[M+H]+, instrument=qtof, precursor_status=precursor_no
+
+[Thu Mar 17 19:37:09 2022]
+Finished job 0.
+1 of 1 steps (100%) done
+Complete log: /home/rictuar/coding_projects/fiehn_work/cfmid/cfmid_redo/workflow/code/original_pipeline/.snakemake/log/2022-03-17T193708.526067.snakemake.log

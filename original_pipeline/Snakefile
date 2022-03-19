@@ -1,0 +1,115 @@
+number_of_bins_global=20
+distance_method_global='dot_product'
+pareto_feature_global='bins'
+
+rule make starting subset:
+    input:
+        overall_input_file_address="../../../results/overall_similarity_result_dot_product_{adduct}.csv"
+    output:
+        one_cohort_output_csv_address="../../../results/{adduct}/{instrument}/{precursor_status}/similarity_subset_nist20_only_{instrument}_only_{adduct}.txt"
+    params:
+        adduct="{adduct}",
+        instrument="{instrument}",
+        precursor_status="{precursor_status}"
+    script:
+        './make_starting_subset.py'
+
+rule make remove_inchikeys_in_metlin:
+    input:
+        orthogonal_similarity_input_address="../../../results/{adduct}/{instrument}/{precursor_status}/similarity_subset_nist20_only_{instrument}_only_{adduct}.txt",
+        metlin_inchikey_address="../../../resources/starting_files/metlin_inchikey_{adduct}.inchi"
+    output:
+        orthogonal_similarity_output_address="../../../results/{adduct}/{instrument}/{precursor_status}/similarity_subset_nist20_only_{instrument}_only_{adduct}_no_metlin.txt"
+    script:
+        './remove_inchikeys_in_metlin.py'
+
+rule bin_distances:
+    input:
+        one_cohort_file_address="../../../results/{adduct}/{instrument}/{precursor_status}/similarity_subset_nist20_only_{instrument}_only_{adduct}_no_metlin.txt"
+    output:
+        binned_output_csv_address="../../../results/{adduct}/{instrument}/{precursor_status}/binned_distances_{adduct}_{instrument}_{precursor_status}.txt"
+    params:
+        number_of_bins=number_of_bins_global,
+        distance_method=distance_method_global
+    script:
+        './bin_distances.py'
+
+rule choose_best_cfmid_score:
+    input:
+        binned_csv_address="../../../results/{adduct}/{instrument}/{precursor_status}/binned_distances_{adduct}_{instrument}_{precursor_status}.txt"
+    output:
+        best_cfmid_selected_address="../../../results/{adduct}/{instrument}/{precursor_status}/best_cfmid_match_{adduct}_{instrument}_{precursor_status}.txt"
+    params:
+        number_of_bins=number_of_bins_global,
+        distance_method=distance_method_global
+    script:
+        './choose_best_cfmid_score.py'
+
+rule append_class_feature:
+    input:
+        input_panda_address="../../../results/{adduct}/{instrument}/{precursor_status}/best_cfmid_match_{adduct}_{instrument}_{precursor_status}.txt",
+        classyfire_results_address="../../../resources/starting_files/classy_fire_results_csv.csv"
+    output:
+        output_dataset_address="../../../results/{adduct}/{instrument}/{precursor_status}/classes_added_{adduct}_{instrument}_{precursor_status}.txt"
+    script:
+        './append_class_feature.py'
+
+
+rule replace_collision_energy_with_norm:
+    input:
+        input_address="../../../results/{adduct}/{instrument}/{precursor_status}/classes_added_{adduct}_{instrument}_{precursor_status}.txt"
+    output:
+        output_dataset_address="../../../results/{adduct}/{instrument}/{precursor_status}/collision_modified_{adduct}_{instrument}_{precursor_status}.txt"
+    script:
+        './replace_collision_energy_with_norm.py'
+
+rule make_cfmid_energy_dash_collision_energy:
+    input:
+        input_panda_address="../../../results/{adduct}/{instrument}/{precursor_status}/collision_modified_{adduct}_{instrument}_{precursor_status}.txt"
+    output:
+        output_panda_address="../../../results/{adduct}/{instrument}/{precursor_status}/cfmid-collision_{adduct}_{instrument}_{precursor_status}.txt"
+    script:
+        './make_cfmid_energy_dash_collision_energy.py'
+
+rule create_pareto_plot:
+    input:
+        ranking_panda_address="../../../results/{adduct}/{instrument}/{precursor_status}/cfmid-collision_{adduct}_{instrument}_{precursor_status}.txt"
+    output:
+        pareto_output_address="../../../results/{adduct}/{instrument}/{precursor_status}/pareto_plot_{adduct}_{instrument}_{precursor_status}.html"
+    params:
+        feature=pareto_feature_global
+    script:
+        './create_pareto_plot.py'
+
+
+
+
+
+
+
+
+
+
+
+
+#not used anymore
+rule create_pandas_dataframe_for_heatmap:
+    input:
+        input_panda_address="../../../results/{adduct}/{instrument}/{precursor_status}/cfmid-collision_{adduct}_{instrument}_{precursor_status}.txt"
+    output:
+        output_dataset_address="../../../results/{adduct}/{instrument}/{precursor_status}/heatmap_panda_{feature}_{adduct}_{instrument}_{precursor_status}.txt"
+    params:
+        feature="{feature}",
+        number_of_ranks=number_of_bins_global,
+        feature_list_user_specified=False
+    script:
+        './create_pandas_dataframe_for_heatmap.py'
+
+rule create_heatmap_visual:
+    input:
+        input_panda_address="../../../results/{adduct}/{instrument}/{precursor_status}/heatmap_panda_{feature}_{adduct}_{instrument}_{precursor_status}.txt"
+    output:
+        output_heatmap_address="../../../results/{adduct}/{instrument}/{precursor_status}/output_files/heatmap_{feature}_{adduct}_{instrument}_{precursor_status}.png"
+    script:
+        './create_heatmap_visual.py'
+

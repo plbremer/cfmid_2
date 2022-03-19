@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 48 of /home/rictuar/coding_projects/fiehn_work/cfmid/cfmid_redo/workflow/code/original_pipeline/Snakefile:
+Missing input files for rule append_class_feature:
+../../../results/[M-H]-/qtof/precursor_yes/classy_fire_results_csv.csv

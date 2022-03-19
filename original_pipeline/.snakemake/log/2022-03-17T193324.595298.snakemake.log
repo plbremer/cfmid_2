@@ -1,0 +1,21 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	remove_inchikeys_in_metlin
+	1
+Select jobs to execute...
+
+[Thu Mar 17 19:33:24 2022]
+rule remove_inchikeys_in_metlin:
+    input: ../../../results/[M+H]+/qtof/precursor_no/similarity_subset_nist20_only_qtof_only_[M+H]+.txt, ../../../resources/starting_files/metlin_inchikey_[M+H]+.inchi
+    output: ../../../results/[M+H]+/qtof/precursor_no/similarity_subset_nist20_only_qtof_only_[M+H]+_no_metlin.txt
+    jobid: 0
+    wildcards: adduct=[M+H]+, instrument=qtof, precursor_status=precursor_no
+
+[Thu Mar 17 19:33:25 2022]
+Finished job 0.
+1 of 1 steps (100%) done
+Complete log: /home/rictuar/coding_projects/fiehn_work/cfmid/cfmid_redo/workflow/code/original_pipeline/.snakemake/log/2022-03-17T193324.595298.snakemake.log

@@ -1,19 +1,20 @@
 import numpy
 import pandas
-import Daphnis.distance_methods.methods
+from Daphnis.distance_methods.methods import distance
 
 #input parameters
-cfmid_csv_address='/home/rictuar/coding_projects/fiehn_work/text_files/_cfmid_4_point_0_spectra_for_experimental_comparison/cfmid_output_csv_nist20_only_adduct_[M+H]+_msrb_relaced.csv'
-empirical_csv_address='/home/rictuar/coding_projects/fiehn_work/text_files/nist20_hr_csv.txt'
+cfmid_csv_address='../../resources/starting_files/cfmid_output_csv_nist20_only_adduct_[M+H]+_msrb_relaced.csv'
+empirical_csv_address='../../resources/starting_files/nist20_hr_csv.txt'
 adduct_of_interest='[M+H]+'
 instrument_of_interest='_null_'
 #the list of inchikeys the the experimental spectra must be in (nist20 only)
-inchikey_nist20_only_address='/home/rictuar/coding_projects/fiehn_work/text_files/_attribute_values_and_counts/set_comparison_nist_20_only_InChIKey.txt'
+inchikey_nist20_only_address='../../resources/starting_files/set_comparison_nist_20_only_InChIKey.txt'
 number_of_metadata_columns=26
 distance_method='dot_product'
-classyfire_results_address='/home/rictuar/coding_projects/fiehn_work/text_files/_cfb_classyfire_results/classy_fire_results_csv.csv'
-output_dataset_address='/home/rictuar/coding_projects/fiehn_work/text_files/_orthogonal_analysis_similarity_only/overall_similarity_result_dot_product_[M+H]+.csv'
+classyfire_results_address='../../resources/starting_files/classy_fire_results_csv.csv'
+output_dataset_address='../../resources/starting_files/overall_similarity_result_dot_product_[M+H]+.csv'
 cfmid_energy_list=['energy0','energy1','energy2']
+dalton_window=2
 
 #build the dict that will hold our new panda
 #read in the experimental panda, 1 row to get columns
@@ -94,18 +95,31 @@ def lookup_spectrum_on_cfmid_panda(cfmid_panda, inchikey, energy):
     #hold=input('hold')
     return spectrum_extracted
 
+
+def remove_precursor_ions(temp_spectrum,temp_precursor_ion,temp_dalton_window):
+    if isinstance(temp_precursor_ion,str):
+        #print(temp_precursor_ion)
+        temp_precursor_ion=float(temp_precursor_ion.strip())
+    
+    return temp_spectrum[
+        (temp_spectrum[:,0]<temp_precursor_ion-temp_dalton_window) |
+        (temp_spectrum[:,0]>temp_precursor_ion+temp_dalton_window)
+    ]
+
 #read in the experimental panda
 #experimental_panda_iterator=pandas.read_csv(empirical_csv_address,sep='@@@',chunksize=5000,nrows=10000)
-experimental_panda_iterator=pandas.read_csv(empirical_csv_address,sep='@@@',chunksize=5000)
+experimental_panda_iterator=pandas.read_csv(empirical_csv_address,sep='@@@',chunksize=5000)#,skiprows=range(2,5000*107))
 chunk_counter=0
 for chunk in experimental_panda_iterator:
     print(chunk_counter)
     chunk_counter+=1
-
+    # if chunk_counter!=108:
+    #     continue
 
     #go through each row
     for index,row in chunk.iterrows():
-        #print(index)
+        # if index%100==0:
+        #     print(index)
         #check adduct matches adduct of interest
         #if (row['Precursor_type'] == adduct_of_interest ):
             #print('precursor match')
@@ -139,9 +153,18 @@ for chunk in experimental_panda_iterator:
         experimental_spectrum_for_daphnis=prepare_row_for_daphnis(experimental_spectrum_extracted)
         #print(experimental_spectrum_for_daphnis)
 
+        #print(row)
+        #print(row['InChIKey'])
+
         #normalize experimental spectrum
         experimental_spectrum_for_daphnis_normalized=normalize_daphnis_spectrum(experimental_spectrum_for_daphnis)
         #print(experimental_spectrum_for_daphnis_normalized)
+        #print(row['PrecursorMZ'])
+        #hold=input('hold')
+
+        experimental_spectrum_for_daphnis_normalized_no_precursor=remove_precursor_ions(experimental_spectrum_for_daphnis_normalized,row['PrecursorMZ'],dalton_window)
+        #print(experimental_spectrum_for_daphnis_normalized_no_precursor)
+        #hold=input('hold')
 
         #extract inchikey so that we can get experimental spectrum
         temp_inchikey=row['InChIKey']
@@ -158,15 +181,20 @@ for chunk in experimental_panda_iterator:
             #prepare cfmid spectrum for daphnis
             matching_cfmid_spectrum_daphnis=prepare_row_for_daphnis(matching_cfmid_spectrum)
             #print(matching_cfmid_spectrum_daphnis)
+            #hold=input('hold')
 
+            matching_cfmid_spectrum_daphnis_no_precursor=remove_precursor_ions(matching_cfmid_spectrum_daphnis,row['PrecursorMZ'],dalton_window)
+            #print(matching_cfmid_spectrum_daphnis_no_precursor)
+            #hold=input('hold')
+            
             #SOMETHING TO APPEND
             #send both spectra to daphnis to get similarity score
-            temp_dist = Daphnis.distance_methods.methods.distance(experimental_spectrum_for_daphnis_normalized, 
-                                            matching_cfmid_spectrum_daphnis, method=distance_method,
+            temp_dist = distance(experimental_spectrum_for_daphnis_normalized_no_precursor, 
+                                            matching_cfmid_spectrum_daphnis_no_precursor, method=distance_method,
                                             normalize_result=True, spectrum_refined=False,
                                             ms2_ppm=10)
             #print(temp_dist)
-
+            #hold=input('distance')
             #get cfmid energy
             #this will be kind of intrinsicly had already
 

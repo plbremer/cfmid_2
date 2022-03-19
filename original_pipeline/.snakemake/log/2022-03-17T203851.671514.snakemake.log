@@ -1,0 +1,112 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 4
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	append_class_feature
+	1	bin_distances
+	1	choose_best_cfmid_score
+	1	create_pareto_plot
+	1	make_cfmid_energy_dash_collision_energy
+	1	remove_inchikeys_in_metlin
+	1	replace_collision_energy_with_norm
+	1	subset
+	8
+Select jobs to execute...
+
+[Thu Mar 17 20:38:51 2022]
+rule subset:
+    input: ../../../results/overall_similarity_result_dot_product_[M+H]+.csv
+    output: ../../../results/[M+H]+/itft/precursor_no/similarity_subset_nist20_only_itft_only_[M+H]+.txt
+    jobid: 7
+    wildcards: adduct=[M+H]+, instrument=itft, precursor_status=precursor_no
+
+[Thu Mar 17 20:38:53 2022]
+Finished job 7.
+1 of 8 steps (12%) done
+Select jobs to execute...
+
+[Thu Mar 17 20:38:53 2022]
+rule remove_inchikeys_in_metlin:
+    input: ../../../results/[M+H]+/itft/precursor_no/similarity_subset_nist20_only_itft_only_[M+H]+.txt, ../../../resources/starting_files/metlin_inchikey_[M+H]+.inchi
+    output: ../../../results/[M+H]+/itft/precursor_no/similarity_subset_nist20_only_itft_only_[M+H]+_no_metlin.txt
+    jobid: 6
+    wildcards: adduct=[M+H]+, instrument=itft, precursor_status=precursor_no
+
+[Thu Mar 17 20:38:53 2022]
+Finished job 6.
+2 of 8 steps (25%) done
+Select jobs to execute...
+
+[Thu Mar 17 20:38:53 2022]
+rule bin_distances:
+    input: ../../../results/[M+H]+/itft/precursor_no/similarity_subset_nist20_only_itft_only_[M+H]+_no_metlin.txt
+    output: ../../../results/[M+H]+/itft/precursor_no/binned_distances_[M+H]+_itft_precursor_no.txt
+    jobid: 5
+    wildcards: adduct=[M+H]+, instrument=itft, precursor_status=precursor_no
+
+[Thu Mar 17 20:38:55 2022]
+Finished job 5.
+3 of 8 steps (38%) done
+Select jobs to execute...
+
+[Thu Mar 17 20:38:55 2022]
+rule choose_best_cfmid_score:
+    input: ../../../results/[M+H]+/itft/precursor_no/binned_distances_[M+H]+_itft_precursor_no.txt
+    output: ../../../results/[M+H]+/itft/precursor_no/best_cfmid_match_[M+H]+_itft_precursor_no.txt
+    jobid: 4
+    wildcards: adduct=[M+H]+, instrument=itft, precursor_status=precursor_no
+
+[Thu Mar 17 20:38:56 2022]
+Finished job 4.
+4 of 8 steps (50%) done
+Select jobs to execute...
+
+[Thu Mar 17 20:38:56 2022]
+rule append_class_feature:
+    input: ../../../results/[M+H]+/itft/precursor_no/best_cfmid_match_[M+H]+_itft_precursor_no.txt, ../../../resources/starting_files/classy_fire_results_csv.csv
+    output: ../../../results/[M+H]+/itft/precursor_no/classes_added_[M+H]+_itft_precursor_no.txt
+    jobid: 3
+    wildcards: adduct=[M+H]+, instrument=itft, precursor_status=precursor_no
+
+[Thu Mar 17 20:39:24 2022]
+Finished job 3.
+5 of 8 steps (62%) done
+Select jobs to execute...
+
+[Thu Mar 17 20:39:24 2022]
+rule replace_collision_energy_with_norm:
+    input: ../../../results/[M+H]+/itft/precursor_no/classes_added_[M+H]+_itft_precursor_no.txt
+    output: ../../../results/[M+H]+/itft/precursor_no/collision_modified_[M+H]+_itft_precursor_no.txt
+    jobid: 2
+    wildcards: adduct=[M+H]+, instrument=itft, precursor_status=precursor_no
+
+[Thu Mar 17 20:39:30 2022]
+Finished job 2.
+6 of 8 steps (75%) done
+Select jobs to execute...
+
+[Thu Mar 17 20:39:30 2022]
+rule make_cfmid_energy_dash_collision_energy:
+    input: ../../../results/[M+H]+/itft/precursor_no/collision_modified_[M+H]+_itft_precursor_no.txt
+    output: ../../../results/[M+H]+/itft/precursor_no/cfmid-collision_[M+H]+_itft_precursor_no.txt
+    jobid: 1
+    wildcards: adduct=[M+H]+, instrument=itft, precursor_status=precursor_no
+
+[Thu Mar 17 20:39:36 2022]
+Finished job 1.
+7 of 8 steps (88%) done
+Select jobs to execute...
+
+[Thu Mar 17 20:39:36 2022]
+rule create_pareto_plot:
+    input: ../../../results/[M+H]+/itft/precursor_no/cfmid-collision_[M+H]+_itft_precursor_no.txt
+    output: ../../../results/[M+H]+/itft/precursor_no/pareto_plot_[M+H]+_itft_precursor_no.html
+    jobid: 0
+    wildcards: adduct=[M+H]+, instrument=itft, precursor_status=precursor_no
+
+[Thu Mar 17 20:39:37 2022]
+Finished job 0.
+8 of 8 steps (100%) done
+Complete log: /home/rictuar/coding_projects/fiehn_work/cfmid/cfmid_redo/workflow/code/original_pipeline/.snakemake/log/2022-03-17T203851.671514.snakemake.log
