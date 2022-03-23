@@ -3,75 +3,66 @@ import numpy
 import pandas
 import matplotlib.pyplot
 import regex as re
+import sys
 
-def transform_collision_energy_column(temp_panda,temp_instrument,temp_instrument_brand,temp_lumos_use_eV):
-    if (temp_instrument=='qtof'):
-        return temp_panda, 'Collision_energy'
+
+
+
+def transform_collision_energy_column(input_panda,instrument,instrument_brand,use_entries_with_eV,put_eV_on_x_axis):
+    if (instrument=='qtof'):
+        return input_panda, 'Collision_energy'
     
-    elif (temp_instrument=='itft'):
-        temp_panda.insert(loc=len(temp_panda.columns),column='Collision_energy_itft',value=35)
-        return temp_panda, 'Collision_energy_itft'
+    elif (instrument=='itft'):
+        input_panda.insert(loc=len(input_panda.columns),column='Collision_energy_itft',value=35)
+        return input_panda, 'Collision_energy_itft'
 
-    elif ((temp_instrument=='hcd') and (temp_instrument_brand=='Orbitrap Fusion Lumos') and (temp_lumos_use_eV==True)):
-        #hold=input('hi')
-        temp_panda.insert(loc=len(temp_panda.columns),column='Collision_energy_hcd_lumos_eV_only',value=-1)
-
-        for index,row in temp_panda.iterrows():
-            #if the collision energy column contains eV, skip it
-            #if 'eV' not in row['Collision_energy']:
-            #    continue
-            if ('Orbitrap Fusion Lumos' not in row['Instrument']) or ('eV' not in row['Collision_energy']):
-                continue
-            else:
-                temp_panda.at[index,'Collision_energy_hcd_lumos_eV_only']=float((re.findall(r'[0-9]+',row['Collision_energy']))[0])
-                #temp_panda.at[index,'Collision_energy_hcd_lumos_eV_only']=float((re.findall(r'[0-9]+',row['Collision_energy']))[1])
-                #print((re.findall(r'[0-9]+',row['Collision_energy']))[1])
-
-        temp_panda=temp_panda.loc[temp_panda['Collision_energy_hcd_lumos_eV_only'] != -1]
-
-        temp_panda['Collision_energy_hcd_lumos_eV_only']=temp_panda['Collision_energy_hcd_lumos_eV_only'].multiply(temp_panda['PrecursorMZ'])
-
-        return temp_panda, 'Collision_energy_hcd_lumos_eV_only'
-
-    elif ((temp_instrument=='hcd') and (temp_instrument_brand=='Orbitrap Fusion Lumos') and (temp_lumos_use_eV==False)):
-        temp_panda.insert(loc=len(temp_panda.columns),column='Collision_energy_hcd_lumos_NCE_only',value=-1)
-
-        for index,row in temp_panda.iterrows():
-            #if the collision energy column contains eV, skip it
-            if ('Orbitrap Fusion Lumos' not in row['Instrument']) or ('eV'  in row['Collision_energy']):
-                continue
-            else:
-                temp_panda.at[index,'Collision_energy_hcd_lumos_NCE_only']=float((re.findall(r'[0-9]+',row['Collision_energy']))[0])
-
+    elif (instrument=='hcd'):
+        #input_panda.insert(loc=len(input_panda.columns),column='Collision_energy_hcd',value=-1)
         
-        temp_panda=temp_panda.loc[temp_panda['Collision_energy_hcd_lumos_NCE_only'] != -1]
+        #subset the panda
+        if  (instrument_brand=='Thermo_Finnigan_Elite_Orbitrap') and (use_entries_with_eV==True):
+            input_panda=input_panda.loc[
+                ((input_panda['Instrument']=='Thermo Finnigan Elite Orbitrap') & 
+                (input_panda['Collision_energy'].str.contains('eV'))),
+                input_panda.columns
+            ]
+        elif  (instrument_brand=='Thermo_Finnigan_Elite_Orbitrap') and (use_entries_with_eV==False):
+            input_panda=input_panda.loc[
+                (input_panda['Instrument']=='Thermo Finnigan Elite Orbitrap') & 
+                (~(input_panda['Collision_energy'].str.contains('eV'))),
+                input_panda.columns
+            ]
+        elif (instrument_brand=='Orbitrap_Fusion_Lumos') and (use_entries_with_eV==True):
+            input_panda=input_panda.loc[
+                (input_panda['Instrument']=='Orbitrap Fusion Lumos') & 
+                (input_panda['Collision_energy'].str.contains('eV')),
+                input_panda.columns
+            ]
+        elif (instrument_brand=='Orbitrap_Fusion_Lumos') and (use_entries_with_eV==False):
+            input_panda=input_panda.loc[
+                (input_panda['Instrument']=='Orbitrap Fusion Lumos') & 
+                (~(input_panda['Collision_energy'].str.contains('eV'))),
+                input_panda.columns
+            ]
+        elif (instrument_brand=='both') and (use_entries_with_eV==True):
+            input_panda=input_panda.loc[
+                (input_panda['Collision_energy'].str.contains('eV')),
+                input_panda.columns
+            ]
+        elif (instrument_brand=='both') and (use_entries_with_eV==False):
+            input_panda=input_panda.loc[
+                (~(input_panda['Collision_energy'].str.contains('eV'))),
+                input_panda.columns
+            ]
 
-        #############################if lumos and hcd##################################
-        #divide column by precursor mz to figure out normalization
-        ##############################################################################        
-        temp_panda['Collision_energy_hcd_lumos_NCE_only']=temp_panda['Collision_energy_hcd_lumos_NCE_only'].multiply(temp_panda['PrecursorMZ'])
-    
-        return temp_panda, 'Collision_energy_hcd_lumos_NCE_only'
+        if put_eV_on_x_axis==True:
+            input_panda['Collision_energy_hcd']=input_panda['Collision_energy'].str.findall(r'[0-9]+').str[1].astype(float)
+        elif put_eV_on_x_axis==False:
+            input_panda['Collision_energy_hcd']=input_panda['Collision_energy'].str.findall(r'[0-9]+').str[0].astype(float)
+            input_panda['Collision_energy_hcd']=input_panda['Collision_energy_hcd'].multiply(input_panda['PrecursorMZ'])
 
-    elif ((temp_instrument=='hcd') and (temp_instrument_brand=='Thermo Finnigan Elite Orbitrap')):
-        temp_panda.insert(loc=len(temp_panda.columns),column='Collision_energy_hcd_Thermo_eV_only',value=-1)
+        return input_panda, 'Collision_energy_hcd'
 
-        for index,row in temp_panda.iterrows():
-            #temp_panda.at[index,'Collision_energy_hcd_Thermo_eV_only']=float((re.findall(r'[0-9]+',row['Collision_energy']))[0])
-
-            if ('Thermo Finnigan Elite Orbitrap' not in row['Instrument']):
-                continue
-            else:
-            
-                #print(temp_panda.at[index,'Collision_energy'])
-                temp_panda.at[index,'Collision_energy_hcd_Thermo_eV_only']=float((re.findall(r'[0-9]+',row['Collision_energy']))[0])
-                #temp_panda.at[index,'Collision_energy_hcd_Thermo_eV_only']=float((re.findall(r'[0-9]+',row['Collision_energy']))[1])
-
-        temp_panda=temp_panda.loc[temp_panda['Collision_energy_hcd_Thermo_eV_only'] != -1]
-        temp_panda['Collision_energy_hcd_Thermo_eV_only']=temp_panda['Collision_energy_hcd_Thermo_eV_only'].multiply(temp_panda['PrecursorMZ'])
-
-        
-        return temp_panda, 'Collision_energy_hcd_Thermo_eV_only'
 
 def bin_column(temp_panda, temp_column_name, temp_bin_count):
     column_bin_integers=pandas.cut(x=temp_panda[temp_column_name],bins=temp_bin_count,labels=False)
@@ -110,7 +101,7 @@ def get_average_of_bin_column(temp_panda,temp_column_name, temp_bin_count,temp_c
         temp_subset_population_list.append(temp_subset_population)
     return temp_bin_value_list,temp_subset_population_list
 
-def make_energy_average_figure(label_list,list_of_averages,hist_labels,output_base,adduct,other):
+def make_energy_average_figure(label_list,list_of_averages,hist_labels,output_base,adduct,instrument,instrument_brand,use_entries_with_eV,put_eV_on_x_axis):
     matplotlib.pyplot.rcParams['font.size'] = 18
     matplotlib.pyplot.rcParams['axes.linewidth'] = 2
 
@@ -129,9 +120,9 @@ def make_energy_average_figure(label_list,list_of_averages,hist_labels,output_ba
         linewidth=3
     )
     my_axes=matplotlib.pyplot.gca()
-    print(n)
-    print(bins)
-    print(len(bins))
+    # print(n)
+    # print(bins)
+    # print(len(bins))
 
     #done because of the way that pandas cut works. adds 1% to range
     #x_tick_spread=(float(hist_labels[-1]1])-float(hist_labels[0][0]))
@@ -160,12 +151,12 @@ def make_energy_average_figure(label_list,list_of_averages,hist_labels,output_ba
     matplotlib.pyplot.legend(label_list,loc='upper center')
     matplotlib.pyplot.tight_layout()
     #matplotlib.pyplot.show()
-    total_output=output_base+adduct+'_'+other+'.png'
+    total_output=output_base+adduct+'_'+instrument+'_'+instrument_brand+'_ev_entries:_'+str(use_entries_with_eV)+'_ev_on_x:_'+str(put_eV_on_x_axis)+'.png'
     matplotlib.pyplot.savefig(total_output)
-    total_output=output_base+adduct+'_'+other+'.eps'
-    matplotlib.pyplot.savefig(total_output)
+    total_output=output_base+adduct+'_'+instrument+'_'+instrument_brand+'_ev_entries:_'+str(use_entries_with_eV)+'_ev_on_x:_'+str(put_eV_on_x_axis)+'.eps'
+    #matplotlib.pyplot.savefig(total_output)
 
-def make_population_insert(bin_population_list,output_base,adduct,other):
+def make_population_insert(bin_population_list,output_base,adduct,instrument,instrument_brand,use_entries_with_eV,put_eV_on_x_axis):
     my_figure=matplotlib.pyplot.figure(figsize=(3.5,3))
     max_population_value=max(bin_population_list)
     bin_population_list=[bin_population_list[i]/max_population_value for i in range(0,len(bin_population_list))]
@@ -174,32 +165,35 @@ def make_population_insert(bin_population_list,output_base,adduct,other):
     matplotlib.pyplot.xlabel('Bin')
     matplotlib.pyplot.ylabel('Relative Population')
     matplotlib.pyplot.tight_layout()
-    total_output=output_base+'population_'+adduct+'_'+other+'.png'
+    total_output=output_base+'population_'+adduct+'_'+instrument+'_'+instrument_brand+'_ev_entries:_'+str(use_entries_with_eV)+'_ev_on_x:_'+str(put_eV_on_x_axis)+'.png'
     matplotlib.pyplot.savefig(total_output)
-    total_output=output_base+'population_'+adduct+'_'+other+'.eps'
+    total_output=output_base+'population_'+adduct+'_'+instrument+'_'+instrument_brand+'_ev_entries:_'+str(use_entries_with_eV)+'_ev_on_x:_'+str(put_eV_on_x_axis)+'.eps'
     matplotlib.pyplot.savefig(total_output)
     #matplotlib.pyplot.show()
 
 
 if __name__ == "__main__":
 
-    bin_count=200
-    adduct='[M-H]-'
-    instrument='hcd'
-    cfmid_energy_list=['energy0','energy1','energy2']
-    if instrument=='hcd':
-        #instrument_brand='Orbitrap Fusion Lumos'
-        instrument_brand='Thermo Finnigan Elite Orbitrap'
-    else:
-        instrument_brand='junk'
-    lumos_use_eV=True
-    #comment='thermo_raw_ev_on_x_axis'
-    #comment='lumos_eV_set_raw_eV_on_x_axis'
-    #comment='no_comments'
-    comment='thermo_nce_times_precursormz_on_x_axis'
-    #comment='lumos_eV_set_nce_times_precursormz_on_x_axis'
+    # bin_count=200
+    # adduct='[M-H]-'
+    # instrument='hcd'
+    # #instrument_brand='Orbitrap_Fusion_Lumos'
+    # instrument_brand='Thermo_Finnigan_Elite_Orbitrap'
+    # use_entries_with_eV=True
+    # put_eV_on_x_axis=True
 
-    input_address='../../results/'+adduct+'/'+instrument+'/precursor_no/binned_distances_'+adduct+'_'+instrument+'_precursor_no.txt'
+    bin_count=int(sys.argv[1])
+    adduct=sys.argv[2]
+    instrument=sys.argv[3]
+    #instrument_brand='Orbitrap_Fusion_Lumos'
+    instrument_brand=sys.argv[4]
+    use_entries_with_eV=bool(int(sys.argv[5]))
+    put_eV_on_x_axis=bool(int(sys.argv[6]))
+
+
+    cfmid_energy_list=['energy0','energy1','energy2']
+    input_address_pos='../../results/[M+H]+/'+instrument+'/precursor_no/binned_distances_[M+H]+_'+instrument+'_precursor_no.txt'
+    input_address_neg='../../results/[M-H]-/'+instrument+'/precursor_no/binned_distances_[M-H]-_'+instrument+'_precursor_no.txt'
     base_output_path='../../results/final_figures/energy_exploration/'+instrument+'/'
 
     
@@ -216,9 +210,22 @@ if __name__ == "__main__":
     hist_labels='to_be_replaced'
 
     for cfmid_energy in cfmid_energy_list:
-        input_panda=pandas.read_csv(input_address,sep='¬')
+        if adduct=='[M+H]+':
+            input_panda=pandas.read_csv(input_address_pos,sep='¬',engine='python')
+        elif adduct=='[M-H]-':
+            input_panda=pandas.read_csv(input_address_neg,sep='¬',engine='python')
+        elif adduct=='both':
+            input_panda_pos=pandas.read_csv(input_address_pos,sep='¬',engine='python')
+            input_panda_neg=pandas.read_csv(input_address_neg,sep='¬',engine='python')
+            input_panda=pandas.concat([input_panda_pos,input_panda_neg],axis='index')
 
-        input_panda,new_collision_energy_name=transform_collision_energy_column(input_panda,instrument,instrument_brand,lumos_use_eV)
+        input_panda,new_collision_energy_name=transform_collision_energy_column(
+            input_panda,
+            instrument,
+            instrument_brand,
+            use_entries_with_eV,
+            put_eV_on_x_axis
+            )
         edges=bin_column(input_panda,new_collision_energy_name,bin_count)
         bin_value_list,bin_population_list=get_average_of_bin_column(input_panda,new_collision_energy_name,bin_count,cfmid_energy)
 
@@ -250,6 +257,23 @@ if __name__ == "__main__":
         hist_labels=histo_labels
         label_list.insert(0,adduct+' '+instrument+' '+cfmid_energy)
 
-    make_energy_average_figure(label_list,list_of_averages,hist_labels,base_output_path,adduct,comment)
-
-    make_population_insert(bin_population_list,base_output_path,adduct,comment)
+    make_energy_average_figure(
+        label_list,
+        list_of_averages,
+        hist_labels,
+        base_output_path,
+        adduct,
+        instrument,
+        instrument_brand,
+        use_entries_with_eV,
+        put_eV_on_x_axis
+    )
+    # make_population_insert(
+    #     bin_population_list,
+    #     base_output_path,
+    #     adduct,
+    #     instrument,
+    #     instrument_brand,
+    #     use_entries_with_eV,
+    #     put_eV_on_x_axis
+    # )
