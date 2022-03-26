@@ -54,12 +54,12 @@ def calculate_input_for_heatmap(similarity_panda,combined_panda,combination_styl
     return result_panda
     
 
-def create_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count):
+def create_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,output_address):
     my_histogram, x_edges, y_edges = np.histogram2d(
         input_panda['dot_product'], input_panda['metlin_similarity'], bins=[x_direction_bin_count, y_direction_bin_count]
     )
     my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=0))
-    #my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=1))
+    my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=1).reshape(-1,1))
     print(my_histogram)
     print(x_edges)
     print(y_edges)
@@ -77,13 +77,19 @@ def create_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count):
         my_histogram.T, extent=extent, origin="lower", aspect="auto", cmap="magma"
     )
     fig.colorbar(image, cax=cax, orientation="vertical")
-    plt.show()
+    #plt.show()
+    plt.savefig(output_address)
 
 if __name__=="__main__":
-    x_direction_bin_count=10
+    x_direction_bin_count=20
     y_direction_bin_count=10
     adduct='[M+H]+'
     instrument='hcd'
+
+    metlin_cleaned_output_address=f'../../../results/compound_exploration/{adduct}_metlin_fingerprints.bin'
+    cohort_cleaned_output_address=f'../../../results/compound_exploration/{adduct}_{instrument}_cohort_fingerprints.bin'
+    figure_max_output_address=f'../../../results/compound_exploration/{adduct}_{instrument}_max_similarity.png'
+
     experimental_inchikeys_to_include_address=f'../../../results/compound_exploration/{adduct}_{instrument}_relevant_inchikeys.bin'
     nist_fingerprint_address='../../../resources/starting_files/fingerprints/fingerprints_nist20_inchikey.txt'
     metlin_fingerprint_address=f'../../../resources/starting_files/fingerprints/fingerprints_metlin_inchikey_{adduct}.txt'
@@ -101,8 +107,8 @@ if __name__=="__main__":
     combined_panda['fingerprint_array']=combined_panda['cactvs_fingerprint'].apply(string_to_numpy)
     metlin_fingerprint_panda['fingerprint_array']=metlin_fingerprint_panda['cactvs_fingerprint'].apply(string_to_numpy)
 
-    combined_panda=combined_panda.loc[0:51,:]
-    metlin_fingerprint_panda=metlin_fingerprint_panda.loc[0:51,:]
+    #combined_panda=combined_panda.loc[0:51,:]
+    #metlin_fingerprint_panda=metlin_fingerprint_panda.loc[0:51,:]
 
     similarity_panda=pd.DataFrame(
         #note the 1 minus to turn jaccard distnace to jaccard similarity
@@ -123,11 +129,12 @@ if __name__=="__main__":
         combined_panda,
         'max'
     )
-    create_heatmap(result_panda,x_direction_bin_count,y_direction_bin_count)
-
-    result_panda=calculate_input_for_heatmap(
-        similarity_panda,
-        combined_panda,
-        'avg'
-    )
-    create_heatmap(result_panda,x_direction_bin_count,y_direction_bin_count)
+    create_heatmap(result_panda,x_direction_bin_count,y_direction_bin_count,figure_max_output_address)
+    metlin_fingerprint_panda.to_pickle(metlin_cleaned_output_address)
+    combined_panda.to_pickle(cohort_cleaned_output_address)
+    # result_panda=calculate_input_for_heatmap(
+    #     similarity_panda,
+    #     combined_panda,
+    #     'avg'
+    # )
+    # create_heatmap(result_panda,x_direction_bin_count,y_direction_bin_count)
