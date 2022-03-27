@@ -21,7 +21,7 @@ def make_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,temp_im
         input_panda['dot_product'], input_panda['feature'], bins=[x_direction_bin_count, y_direction_bin_count]
     )
     print(my_histogram)
-    my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=0))
+    #my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=0))
     my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=1).reshape(-1,1))
 
     extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]]
@@ -41,12 +41,18 @@ def make_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,temp_im
     plt.show()
 
 if __name__=="__main__":
-    important_feature_list=[  
-            1,  20, 374, 696, 712,   2, 186, 643,  19, 600, 528, 697, 392,
-            15, 257, 699, 364, 185, 437, 628, 391,  12, 143,   3, 335, 346,
-            345, 607, 688, 656, 593, 449, 192, 540, 645, 248, 672, 451, 535,
-            452, 440, 338, 516,  24, 665, 376, 341, 638, 685,  16
-        ]
+    # important_feature_list=[  
+    #         1,  20, 374, 696, 712,   2, 186, 643,  19, 600, 528, 697, 392,
+    #         15, 257, 699, 364, 185, 437, 628, 391,  12, 143,   3, 335, 346,
+    #         345, 607, 688, 656, 593, 449, 192, 540, 645, 248, 672, 451, 535,
+    #         452, 440, 338, 516,  24, 665, 376, 341, 638, 685,  16
+    #     ]
+
+    important_feature_list=    [  1, 374,   2, 345, 712, 257, 696, 697, 185, 688, 333, 186, 643,
+            645, 439, 392, 656,  20, 665, 540, 181, 710, 346, 451, 709, 365,
+            449,  11, 143, 516, 391, 287, 818, 452, 356, 600, 611, 672, 528,
+             19, 335, 545, 430, 376, 340, 797, 440, 708, 241,  12]
+    #important_feature_list=[i for i in range(0,600,20)]
         
     #important_feature_list=[1, 2, 15, 19, 20, 186, 374, 392, 528, 600, 643, 696, 697, 712]
     #important_feature_list=[1, 20, 376, 392, 437, 449, 451, 600, 607, 628, 665, 712]

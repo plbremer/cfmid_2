@@ -60,6 +60,16 @@ def create_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,outpu
     )
     #my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=0))
     my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=1).reshape(-1,1))
+    #my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=0))
+    #my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=0))
+    # my_histogram=np.divide(
+    #     my_histogram,
+    #     np.add.outer(
+    #         np.sum(my_histogram,axis=1),
+    #         np.sum(my_histogram,axis=0)
+    #     )
+    # )
+
     print(my_histogram)
     print(x_edges)
     print(y_edges)
@@ -127,8 +137,8 @@ if __name__=="__main__":
     combined_panda['fingerprint_array']=combined_panda['cactvs_fingerprint'].apply(string_to_numpy)
     metlin_fingerprint_panda['fingerprint_array']=metlin_fingerprint_panda['cactvs_fingerprint'].apply(string_to_numpy)
 
-    combined_panda=combined_panda.loc[0:502,:]
-    metlin_fingerprint_panda=metlin_fingerprint_panda.loc[0:502,:]
+    # combined_panda=combined_panda.loc[0:502,:]
+    # metlin_fingerprint_panda=metlin_fingerprint_panda.loc[0:502,:]
 
     similarity_panda=pd.DataFrame(
         #note the 1 minus to turn jaccard distnace to jaccard similarity
