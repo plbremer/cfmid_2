@@ -58,12 +58,14 @@ def create_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,outpu
     my_histogram, x_edges, y_edges = np.histogram2d(
         input_panda['dot_product'], input_panda['metlin_similarity'], bins=[x_direction_bin_count, y_direction_bin_count]
     )
-    my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=0))
+    #my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=0))
     my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=1).reshape(-1,1))
     print(my_histogram)
     print(x_edges)
     print(y_edges)
     extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]]
+    print('extent!!!!')
+    print(extent)
     # create figure from out histogram
     fig, ax = plt.subplots()
     divider = make_axes_locatable(ax)
@@ -71,14 +73,32 @@ def create_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,outpu
     plt.ylabel("Jaccard Similarity")
     plt.xlabel("dot product")
     tick_spacing = 2
+    
     ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+
+    for i in range(len(my_histogram)):
+        print(f'i is {i}')
+        for j in range(len(my_histogram[0])):
+            print(f'j is {j}')
+            location_x=(((extent[1]-extent[0])/len(my_histogram))*i)+extent[0]+0.5*((extent[1]-extent[0])/len(my_histogram))
+            location_y=(((extent[3]-extent[2])/len(my_histogram[0]))*j)+extent[2]+0.5*((extent[3]-extent[2])/len(my_histogram[2]))
+            text=ax.text(
+                location_x,location_y,str(my_histogram[i,j])[0:4],
+                #location_x,location_y,'hi',
+                #0,location_x,my_histogram[i,j],
+                #location_x,location_y,
+                ha="center",va="center",color='w'
+            )
+
     cax = divider.append_axes("right", size="5%", pad=0.05)
     image = ax.imshow(
         my_histogram.T, extent=extent, origin="lower", aspect="auto", cmap="magma"
     )
     fig.colorbar(image, cax=cax, orientation="vertical")
-    #plt.show()
-    plt.savefig(output_address)
+
+    
+    plt.show()
+    #plt.savefig(output_address)
 
 if __name__=="__main__":
     x_direction_bin_count=20
@@ -107,8 +127,8 @@ if __name__=="__main__":
     combined_panda['fingerprint_array']=combined_panda['cactvs_fingerprint'].apply(string_to_numpy)
     metlin_fingerprint_panda['fingerprint_array']=metlin_fingerprint_panda['cactvs_fingerprint'].apply(string_to_numpy)
 
-    #combined_panda=combined_panda.loc[0:51,:]
-    #metlin_fingerprint_panda=metlin_fingerprint_panda.loc[0:51,:]
+    combined_panda=combined_panda.loc[0:502,:]
+    metlin_fingerprint_panda=metlin_fingerprint_panda.loc[0:502,:]
 
     similarity_panda=pd.DataFrame(
         #note the 1 minus to turn jaccard distnace to jaccard similarity

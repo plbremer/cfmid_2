@@ -33,7 +33,8 @@ def make_heatmap(input_panda,y_direction_bin_count,output_address):
     my_histogram, x_edges, y_edges = np.histogram2d(
         input_panda['bins'], input_panda['experimental_collision_parsed_maxed'], bins=[20, y_direction_bin_count]
     )
-    my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=0))
+    #my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=0))
+    my_histogram=np.divide(my_histogram,np.sum(my_histogram,axis=1).reshape(-1,1))
     print(my_histogram)
     print(x_edges)
     print(y_edges)
@@ -59,6 +60,10 @@ if __name__ == "__main__":
     y_direction_bin_count=44
     adduct='[M+H]+'
     instrument='qtof'
+    # max_eV=70
+    # y_direction_bin_count=50
+    # adduct='[M+H]+'
+    # instrument='hcd'
     starting_file_address=f"../../../results/{adduct}/{instrument}/precursor_no/cfmid-collision_{adduct}_{instrument}_precursor_no.txt"
     base_output_path='../../../results/final_figures/energy_exploration/overall_heatmapped/'
     output_address=base_output_path+f'heatmap_{adduct}_{instrument}.png'
