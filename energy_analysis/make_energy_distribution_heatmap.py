@@ -61,8 +61,8 @@ def make_heatmap(input_panda,y_direction_bin_count,output_address):
         my_histogram.T, extent=extent, origin="lower", aspect="auto", cmap="magma"
     )
     fig.colorbar(image, cax=cax, orientation="vertical")
-    plt.show()
-    #plt.savefig(output_address)
+    #plt.show()
+    plt.savefig(output_address)
 
 if __name__ == "__main__":
     # max_eV=45

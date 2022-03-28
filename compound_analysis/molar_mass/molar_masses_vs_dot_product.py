@@ -14,7 +14,7 @@ def make_heatmap_panda(temp_panda):
     return heatmap_input_panda
 
 
-def make_heatmap(input_panda):
+def make_heatmap(input_panda,output_address):
     my_histogram, x_edges, y_edges = np.histogram2d(
         input_panda['dot_product'].astype(float), input_panda['exact_mass'].astype(float), bins=[x_direction_bin_count, y_direction_bin_count]
     )   
@@ -35,6 +35,7 @@ def make_heatmap(input_panda):
     )
     fig.colorbar(image, cax=cax, orientation="vertical")
     plt.show()
+    plt.savefig(output_address)
 
 
 if __name__=="__main__":
@@ -46,7 +47,7 @@ if __name__=="__main__":
     instrument='hcd'
     cohort_cleaned_input_address=f'../../../../results/compound_exploration/{adduct}_{instrument}_cohort_fingerprints.bin'
     molar_mass_input_address='../../../../results/compound_exploration/molar_mass/nist20_positive_masses.bin'
-    
+    output_address=f'../../../../results/compound_exploration/molar_mass/{adduct}_{instrument}_molar_mass_histo.png'
 
 
     cohort_panda=pd.read_pickle(cohort_cleaned_input_address)
@@ -76,4 +77,4 @@ if __name__=="__main__":
     # heatmap_panda.exact_mass.hist()
     # plt.show()
     print(heatmap_panda)
-    make_heatmap(heatmap_panda)
+    make_heatmap(heatmap_panda,output_address)

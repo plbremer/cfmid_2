@@ -121,8 +121,8 @@ if __name__=="__main__":
     figure_max_output_address=f'../../../results/compound_exploration/{adduct}_{instrument}_max_similarity.png'
 
     experimental_inchikeys_to_include_address=f'../../../results/compound_exploration/{adduct}_{instrument}_relevant_inchikeys.bin'
-    nist_fingerprint_address='../../../resources/starting_files/fingerprints/fingerprints_nist20_inchikey.txt'
-    metlin_fingerprint_address=f'../../../resources/starting_files/fingerprints/fingerprints_metlin_inchikey_{adduct}.txt'
+    nist_fingerprint_address='../../../resources/starting_files/nist/fingerprints/fingerprints_nist20_inchikey.txt'
+    metlin_fingerprint_address=f'../../../resources/starting_files/metlin/fingerprints/fingerprints_metlin_inchikey_{adduct}.txt'
     input_panda=pd.read_pickle(experimental_inchikeys_to_include_address)
     input_panda=flatten_inchikeys(input_panda)
     input_panda=remove_redundant_inchikeys(input_panda)
@@ -162,9 +162,10 @@ if __name__=="__main__":
     create_heatmap(result_panda,x_direction_bin_count,y_direction_bin_count,figure_max_output_address)
     metlin_fingerprint_panda.to_pickle(metlin_cleaned_output_address)
     combined_panda.to_pickle(cohort_cleaned_output_address)
+    
     # result_panda=calculate_input_for_heatmap(
     #     similarity_panda,
     #     combined_panda,
     #     'avg'
     # )
-    # create_heatmap(result_panda,x_direction_bin_count,y_direction_bin_count)
+    # create_heatmap(result_panda,x_direction_bin_count,y_direction_bin_count,figure_max_output_address)

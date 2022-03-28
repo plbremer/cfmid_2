@@ -16,7 +16,7 @@ def make_heatmap_panda(temp_panda,feature_number):
     heatmap_input_panda=pd.DataFrame.from_dict(heatmap_panda_dict)
     return heatmap_input_panda
 
-def make_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,temp_important_feature):
+def make_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,temp_important_feature,output_base):
     my_histogram, x_edges, y_edges = np.histogram2d(
         input_panda['dot_product'], input_panda['feature'], bins=[x_direction_bin_count, y_direction_bin_count]
     )
@@ -38,7 +38,8 @@ def make_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,temp_im
         my_histogram.T, extent=extent, origin="lower", aspect="auto", cmap="magma", vmin=0, vmax=1
     )
     fig.colorbar(image, cax=cax, orientation="vertical")
-    plt.show()
+    #plt.show()
+    plt.savefig(output_base+str(feature_of_interest_number)+'.png')
 
 if __name__=="__main__":
     # important_feature_list=[  
@@ -62,9 +63,10 @@ if __name__=="__main__":
     adduct='[M+H]+'
     instrument='hcd'
     cohort_cleaned_output_address=f'../../../results/compound_exploration/{adduct}_{instrument}_cohort_fingerprints.bin'
+    output_base=f'../../../results/compound_exploration/individual_features/{adduct}_{instrument}_feature_'
     cohort_panda=pd.read_pickle(cohort_cleaned_output_address)
 
 
     for feature_of_interest_number in important_feature_list:
         heatmap_input_panda=make_heatmap_panda(cohort_panda,feature_of_interest_number)
-        make_heatmap(heatmap_input_panda,x_direction_bin_count,y_direction_bin_count,feature_of_interest_number)
+        make_heatmap(heatmap_input_panda,x_direction_bin_count,y_direction_bin_count,feature_of_interest_number,output_base)
