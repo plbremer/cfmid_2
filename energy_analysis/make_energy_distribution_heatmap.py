@@ -42,7 +42,11 @@ def make_heatmap(input_panda,y_direction_bin_count,output_address):
     #         np.sum(my_histogram,axis=0)
     #     )
     # )
-
+    #######
+    #transform to percents
+    my_histogram=100*my_histogram
+    plt.rcParams['font.size']=18
+    #######
 
     print(my_histogram)
     print(x_edges)
@@ -60,9 +64,27 @@ def make_heatmap(input_panda,y_direction_bin_count,output_address):
     image = ax.imshow(
         my_histogram.T, extent=extent, origin="lower", aspect="auto", cmap="magma"
     )
-    fig.colorbar(image, cax=cax, orientation="vertical")
+
+    #######
+    for i in range(1,len(x_edges)-1):
+        ax.vlines(
+            x=x_edges[i],
+            ymin=y_edges[0],
+            ymax=y_edges[-1],
+            colors='w'
+        )
+    ax.set_xticks([ (x_edges[i]-(x_edges[1]/2)) for i in range(1,len(x_edges))])
+    ax.set_xticklabels([ (str(1000-i*50+25)) for i in range(1,len(x_edges))],rotation=-90)  
+    #######
+
+    fig.colorbar(image, cax=cax, orientation="vertical",label='Percentage of Compounds')
     #plt.show()
+    output_address=base_output_path+f'heatmap_{adduct}_{instrument}.png'
     plt.savefig(output_address)
+    output_address=base_output_path+f'heatmap_{adduct}_{instrument}.eps'
+    plt.savefig(output_address)
+    
+
 
 if __name__ == "__main__":
     # max_eV=45
@@ -70,16 +92,16 @@ if __name__ == "__main__":
     # adduct='[M+H]+'
     # instrument='qtof'
     max_eV=70
-    y_direction_bin_count=50
+    y_direction_bin_count=30
     adduct='[M+H]+'
     instrument='hcd'
     starting_file_address=f"../../../results/{adduct}/{instrument}/precursor_no/cfmid-collision_{adduct}_{instrument}_precursor_no.txt"
-    base_output_path='../../../results/final_figures/energy_exploration/overall_heatmapped/'
-    output_address=base_output_path+f'heatmap_{adduct}_{instrument}.png'
+    base_output_path='../../../results/energy_exploration/overall_heatmapped/'
+    
 
     input_panda=pd.read_csv(starting_file_address,sep='¬')
 
     input_panda=make_collision_energy_column(input_panda,instrument)
     input_panda=collapse_large_eV(input_panda,max_eV)
     print(input_panda)
-    make_heatmap(input_panda,y_direction_bin_count,output_address)
+    make_heatmap(input_panda,y_direction_bin_count,base_output_path)

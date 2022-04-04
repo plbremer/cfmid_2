@@ -109,20 +109,43 @@ def make_energy_average_figure(label_list,list_of_averages,hist_labels,output_ba
     #my_figure = matplotlib.pyplot.figure(figsize=(6.69292, 8))
     my_figure = matplotlib.pyplot.figure(figsize=(20, 8))
 
-    matplotlib.pyplot.xlabel('Experimental Collision Energies')
+    if instrument=='qtof' and adduct=='[M+H]+':
+        matplotlib.pyplot.xlabel('Experimental Collision Energies (eV)')
+    elif instrument=='hcd' and adduct=='[M+H]+':
+        matplotlib.pyplot.xlabel('Experimental Collision Energies (eV)\n Precursor (m/z) × %NCE')
     matplotlib.pyplot.ylabel('Average Dot Product')
 
-    n,bins,patches=matplotlib.pyplot.hist(
-        x=[numpy.arange(0,bin_count) for temp in range(0,3)],
-        weights=list_of_averages,
-        bins=bin_count,
-        histtype='step',
-        linewidth=3
-    )
+    if instrument=='qtof' and adduct=='[M+H]+':
+        n,bins,patches=matplotlib.pyplot.hist(
+            x=[numpy.arange(0,bin_count) for temp in range(0,3)],
+            weights=list_of_averages,
+            bins=bin_count,
+            histtype='step',
+            linewidth=3,
+            color=['darkorange','darkorchid','darkcyan']
+        )
+    elif instrument=='hcd' and adduct=='[M+H]+':
+        n,bins,patches=matplotlib.pyplot.hist(
+            x=[numpy.arange(0,bin_count/4) for temp in range(0,3)],
+            weights=[list_of_averages[0][0:50],list_of_averages[1][0:50],list_of_averages[2][0:50]],
+            # x=[numpy.arange(0,bin_count) for temp in range(0,3)],
+            # weights=list_of_averages,
+            bins=50,#bin_count
+            histtype='step',
+            linewidth=3,
+            color=['darkorange','darkorchid','darkcyan']
+        )
     my_axes=matplotlib.pyplot.gca()
     # print(n)
     # print(bins)
     # print(len(bins))
+
+    # if instrument=='hcd' and adduct=='[M+H]+':
+    #     n=n[0:50]
+    #     bins=bins[0:50]
+    #     patches=patches[0:50]
+    #     hist_labels=hist_labels[0:49]
+
 
     #done because of the way that pandas cut works. adds 1% to range
     #x_tick_spread=(float(hist_labels[-1]1])-float(hist_labels[0][0]))
@@ -140,21 +163,54 @@ def make_energy_average_figure(label_list,list_of_averages,hist_labels,output_ba
     # my_axes.set_xticklabels(hist_labels,rotation=-90)
     # #the normal approach
     offset=((bins[0]-bins[1])/2)
-    my_axes.set_xticks([ bins[i]-offset for i in range(0,len(bins)-1,3) ])
-    my_axes.set_xticklabels(hist_labels[::3],rotation=-90)    
-
+    
+    #my_axes.set_xticklabels(hist_labels[::3],rotation=-90)   
+    if instrument=='qtof' and adduct=='[M+H]+':
+        x_labels=[' ' for i in range(len(hist_labels))]
+        x_labels[0]='1'
+        x_labels[8]='10'
+        x_labels[18]='20'
+        x_labels[38]='40'
+        my_axes.set_xticks([ bins[i]-offset for i in range(0,len(bins)-1) ])
+        my_axes.set_xticklabels(x_labels)#,rotation=-90)
+    elif instrument=='hcd' and adduct=='[M+H]+':
+        x_labels=[' ' for i in range((50))]
+        x_labels[0]='1'
+        x_labels[7]='10'
+        x_labels[14]='20'
+        x_labels[28]='40'
+        x_labels[35]='50'
+        x_labels[49]='70'
+        
+        my_axes.set_xticks([ bins[i]-offset for i in range(0,len(bins)-1) ])
+        my_axes.set_xticklabels(x_labels)
+        #my_axes.set_xticklabels(hist_labels[0:50],rotation=-90) 
+    
 
     my_axes.set_yticks(numpy.arange(0,1.2,0.2))
     y_plot_labels=['0','200','400','600','800','999']
     my_axes.set_yticklabels(y_plot_labels,rotation=0)
 
-    matplotlib.pyplot.legend(label_list,loc='upper center')
+    if instrument=='qtof' and adduct=='[M+H]+':
+        legend_labels=[
+            '[M+H]+ Q-TOF, CFM-ID 40',
+            '[M+H]+ Q-TOF, CFM-ID 20',
+            '[M+H]+ Q-TOF, CFM-ID 10',
+        ]
+    elif instrument=='hcd' and adduct=='[M+H]+':
+        legend_labels=[
+            '[M+H]+ HCD-Orbitrap, CFM-ID 40',
+            '[M+H]+ HCD-Orbitrap, CFM-ID 20',
+            '[M+H]+ HCD-Orbitrap, CFM-ID 10',
+        ]
+
+    matplotlib.pyplot.legend(legend_labels,loc='upper center')
     matplotlib.pyplot.tight_layout()
     #matplotlib.pyplot.show()
     total_output=output_base+adduct+'_'+instrument+'_'+instrument_brand+'_ev_entries:_'+str(use_entries_with_eV)+'_ev_on_x:_'+str(put_eV_on_x_axis)+'.png'
     matplotlib.pyplot.savefig(total_output)
     total_output=output_base+adduct+'_'+instrument+'_'+instrument_brand+'_ev_entries:_'+str(use_entries_with_eV)+'_ev_on_x:_'+str(put_eV_on_x_axis)+'.eps'
-    #matplotlib.pyplot.savefig(total_output)
+    matplotlib.pyplot.savefig(total_output)
 
 def make_population_insert(bin_population_list,output_base,adduct,instrument,instrument_brand,use_entries_with_eV,put_eV_on_x_axis):
     my_figure=matplotlib.pyplot.figure(figsize=(3.5,3))
@@ -168,33 +224,40 @@ def make_population_insert(bin_population_list,output_base,adduct,instrument,ins
     total_output=output_base+'population_'+adduct+'_'+instrument+'_'+instrument_brand+'_ev_entries:_'+str(use_entries_with_eV)+'_ev_on_x:_'+str(put_eV_on_x_axis)+'.png'
     matplotlib.pyplot.savefig(total_output)
     total_output=output_base+'population_'+adduct+'_'+instrument+'_'+instrument_brand+'_ev_entries:_'+str(use_entries_with_eV)+'_ev_on_x:_'+str(put_eV_on_x_axis)+'.eps'
-    matplotlib.pyplot.savefig(total_output)
-    #matplotlib.pyplot.show()
+    #matplotlib.pyplot.savefig(total_output)
+    matplotlib.pyplot.show()
 
 
 if __name__ == "__main__":
 
+    bin_count=44
+    adduct='[M+H]+'
+    instrument='qtof'
+    instrument_brand='junk'
+    use_entries_with_eV='junk'
+    put_eV_on_x_axis='junk'
+
     # bin_count=200
-    # adduct='[M-H]-'
+    # adduct='[M+H]+'
     # instrument='hcd'
     # #instrument_brand='Orbitrap_Fusion_Lumos'
     # instrument_brand='Thermo_Finnigan_Elite_Orbitrap'
     # use_entries_with_eV=True
     # put_eV_on_x_axis=True
 
-    bin_count=int(sys.argv[1])
-    adduct=sys.argv[2]
-    instrument=sys.argv[3]
-    #instrument_brand='Orbitrap_Fusion_Lumos'
-    instrument_brand=sys.argv[4]
-    use_entries_with_eV=bool(int(sys.argv[5]))
-    put_eV_on_x_axis=bool(int(sys.argv[6]))
+    # bin_count=int(sys.argv[1])
+    # adduct=sys.argv[2]
+    # instrument=sys.argv[3]
+    # #instrument_brand='Orbitrap_Fusion_Lumos'
+    # instrument_brand=sys.argv[4]
+    # use_entries_with_eV=bool(int(sys.argv[5]))
+    # put_eV_on_x_axis=bool(int(sys.argv[6]))
 
 
     cfmid_energy_list=['energy0','energy1','energy2']
-    input_address_pos='../../results/[M+H]+/'+instrument+'/precursor_no/binned_distances_[M+H]+_'+instrument+'_precursor_no.txt'
-    input_address_neg='../../results/[M-H]-/'+instrument+'/precursor_no/binned_distances_[M-H]-_'+instrument+'_precursor_no.txt'
-    base_output_path='../../results/final_figures/energy_exploration/'+instrument+'/'
+    input_address_pos='../../../results/[M+H]+/'+instrument+'/precursor_no/binned_distances_[M+H]+_'+instrument+'_precursor_no.txt'
+    input_address_neg='../../../results/[M-H]-/'+instrument+'/precursor_no/binned_distances_[M-H]-_'+instrument+'_precursor_no.txt'
+    base_output_path='../../../results/energy_exploration/'+instrument+'/'
 
     
 

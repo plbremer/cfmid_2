@@ -25,9 +25,9 @@ import os
 # use_entries_with_eV_list=[0,1]
 # put_eV_on_x_axis_list=[0,1]
 
-bin_count_list=['200']
-adduct_list=['both']
-instrument_list=['hcd']
+bin_count_list=['44']
+adduct_list=['M+H+']
+instrument_list=['qtof']
 instrument_brand_list=['both']
 use_entries_with_eV_list=[1]
 put_eV_on_x_axis_list=[0]

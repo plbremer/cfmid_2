@@ -41,8 +41,6 @@ def make_heatmap(input_panda,output_address):
     )
     
     #######
-    
-    
     for i in range(1,len(x_edges)-1):
         ax.vlines(
             x=x_edges[i],
@@ -50,15 +48,13 @@ def make_heatmap(input_panda,output_address):
             ymax=y_edges[-1],
             colors='w'
         )
-
-    #print('this many')
-    #print([i in range(1,len(x_edges)-1)])
     ax.set_xticks([ (x_edges[i]-(x_edges[1]/2)) for i in range(1,len(x_edges))])
     ax.set_xticklabels([ (str(1000-i*50+25)) for i in range(1,len(x_edges))],rotation=-90)  
-    #print()
+    fig.colorbar(image, cax=cax, orientation="vertical",label='Percentage of Compounds')
     #######
 
-    fig.colorbar(image, cax=cax, orientation="vertical",label='Percentage of Compounds')
+
+    fig.colorbar.ax.set_label(rotation=180)
     print(extent)
     print('extent')
     plt.tight_layout()
