@@ -54,12 +54,12 @@ def make_heatmap(input_panda,output_address):
     #######
 
 
-    fig.colorbar.ax.set_label(rotation=180)
+    #fig.colorbar.ax.set_label(rotation=180)
     print(extent)
     print('extent')
     plt.tight_layout()
-    plt.show()
-    #plt.savefig(output_address)
+    # plt.show()
+    plt.savefig(output_address,figsize=(20,20))
 
 
 if __name__=="__main__":
@@ -71,7 +71,7 @@ if __name__=="__main__":
     instrument='hcd'
     cohort_cleaned_input_address=f'../../../../results/compound_exploration/{adduct}_{instrument}_cohort_fingerprints.bin'
     molar_mass_input_address='../../../../results/compound_exploration/molar_mass/nist20_positive_masses.bin'
-    output_address=f'../../../../results/compound_exploration/molar_mass/{adduct}_{instrument}_molar_mass_histo.png'
+    
 
 
     cohort_panda=pd.read_pickle(cohort_cleaned_input_address)
@@ -101,4 +101,11 @@ if __name__=="__main__":
     # heatmap_panda.exact_mass.hist()
     # plt.show()
     print(heatmap_panda)
+    # output_address=f'../../../../results/compound_exploration/molar_mass/{adduct}_{instrument}_molar_mass_histo.png'
+    # make_heatmap(heatmap_panda,output_address)
+    # output_address=f'../../../../results/compound_exploration/molar_mass/{adduct}_{instrument}_molar_mass_histo.eps'
+    # make_heatmap(heatmap_panda,output_address)
+    output_address=f'../../../../results/final_figures/submitted_to_manuscript/{adduct}_{instrument}_molar_mass_histo.png'
+    make_heatmap(heatmap_panda,output_address)
+    output_address=f'../../../../results/final_figures/submitted_to_manuscript/{adduct}_{instrument}_molar_mass_histo.eps'
     make_heatmap(heatmap_panda,output_address)
