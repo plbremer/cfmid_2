@@ -53,11 +53,11 @@ def make_heatmap(input_panda,y_direction_bin_count,output_address):
     print(y_edges)
     extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]]
     # create figure from out histogram
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6.69292, 6))
     divider = make_axes_locatable(ax)
-    plt.title("Experimental Collision Energy vs. Similarity Score")
+    #plt.title("Experimental Collision Energy vs. Similarity Score")
     plt.ylabel("Experimental Collision Energy (eV)")
-    plt.xlabel("Similarity Score")
+    plt.xlabel("Dot Product")
     tick_spacing = 2
     ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
     cax = divider.append_axes("right", size="5%", pad=0.05)
@@ -73,12 +73,14 @@ def make_heatmap(input_panda,y_direction_bin_count,output_address):
             ymax=y_edges[-1],
             colors='w'
         )
-    ax.set_xticks([ (x_edges[i]-(x_edges[1]/2)) for i in range(1,len(x_edges))])
-    ax.set_xticklabels([ (str(1000-i*50+25)) for i in range(1,len(x_edges))],rotation=-90)  
+    ax.set_xticks([ (x_edges[i]-(x_edges[1]/2)) for i in range(2,len(x_edges),2)])
+    ax.set_xticklabels([ (str(1000-i*50+25)) for i in range(2,len(x_edges),2)],rotation=-90)  
     #######
 
     fig.colorbar(image, cax=cax, orientation="vertical",label='Percentage of Compounds')
+    plt.tight_layout()
     #plt.show()
+
     output_address=base_output_path+f'heatmap_{adduct}_{instrument}.png'
     plt.savefig(output_address)
     output_address=base_output_path+f'heatmap_{adduct}_{instrument}.eps'

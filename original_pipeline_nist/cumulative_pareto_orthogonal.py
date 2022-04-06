@@ -91,8 +91,8 @@ named_colors=['indianred','red','palegreen','green','cornflowerblue','blue']
 n,bins,patches=matplotlib.pyplot.hist(
     x=list_of_bin_columns,
     bins=20,density=True,
-    cumulative=True,
-    #cumulative=False,
+    #cumulative=True,
+    cumulative=False,
     histtype='step',
     label=list_of_labels,
     linewidth=3,
@@ -125,7 +125,7 @@ if (label_each_x==True):
     #matplotlib.pyplot.xticks(labels=plot_labels)
     my_axes.set_xticks(numpy.arange(0,19,0.95))
 else:
-    x_plot_labels_numbers=numpy.arange(900,-50,-100)
+    x_plot_labels_numbers=numpy.arange(925,-25,-100)
     print(x_plot_labels_numbers)
     #x_plot_labels_words=['≥' for x in range(0,20)]
     x_plot_labels=list()
@@ -149,8 +149,8 @@ matplotlib.pyplot.legend(list_of_labels,loc='upper left')
 
 #matplotlib.pyplot.figure(figsize=(3.34646,))
 matplotlib.pyplot.tight_layout()
-matplotlib.pyplot.savefig(pareto_output_address+'_cumulative.eps')
-matplotlib.pyplot.savefig(pareto_output_address+'_cumulative.png')
+matplotlib.pyplot.savefig(pareto_output_address+'_not_cumulative.eps')
+matplotlib.pyplot.savefig(pareto_output_address+'_not_cumulative.png')
 
 
 matplotlib.pyplot.show()

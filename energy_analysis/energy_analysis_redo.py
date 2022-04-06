@@ -106,8 +106,8 @@ def make_energy_average_figure(label_list,list_of_averages,hist_labels,output_ba
     matplotlib.pyplot.rcParams['axes.linewidth'] = 2
 
     #my_figure = matplotlib.pyplot.figure(figsize=(6, 6))
-    #my_figure = matplotlib.pyplot.figure(figsize=(6.69292, 8))
-    my_figure = matplotlib.pyplot.figure(figsize=(20, 8))
+    my_figure = matplotlib.pyplot.figure(figsize=(6.69292, 8))
+    #my_figure = matplotlib.pyplot.figure(figsize=(20, 8))
 
     if instrument=='qtof' and adduct=='[M+H]+':
         matplotlib.pyplot.xlabel('Experimental Collision Energies (eV)')
@@ -224,8 +224,8 @@ def make_population_insert(bin_population_list,output_base,adduct,instrument,ins
     total_output=output_base+'population_'+adduct+'_'+instrument+'_'+instrument_brand+'_ev_entries:_'+str(use_entries_with_eV)+'_ev_on_x:_'+str(put_eV_on_x_axis)+'.png'
     matplotlib.pyplot.savefig(total_output)
     total_output=output_base+'population_'+adduct+'_'+instrument+'_'+instrument_brand+'_ev_entries:_'+str(use_entries_with_eV)+'_ev_on_x:_'+str(put_eV_on_x_axis)+'.eps'
-    #matplotlib.pyplot.savefig(total_output)
-    matplotlib.pyplot.show()
+    matplotlib.pyplot.savefig(total_output)
+    #matplotlib.pyplot.show()
 
 
 if __name__ == "__main__":

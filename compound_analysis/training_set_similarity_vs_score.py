@@ -72,20 +72,22 @@ def create_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,outpu
     #######
     #transform to percents
     my_histogram=100*my_histogram
-    plt.rcParams['font.size']=18
+    plt.rcParams['font.family']='Arial'
+    plt.rcParams['font.size']=14
     #######
     print(my_histogram)
     print(x_edges)
     print(y_edges)
     extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]]
+    fig, ax = plt.subplots(figsize=(6.69292, 6))
     print('extent!!!!')
     print(extent)
     # create figure from out histogram
     fig, ax = plt.subplots()
     divider = make_axes_locatable(ax)
-    plt.title("Experimental Collision Energy vs. Jaccard Similarity to Training Set")
-    plt.ylabel("Jaccard Similarity")
-    plt.xlabel("dot product")
+    #plt.title("Experimental Collision Energy vs. Jaccard Similarity to Training Set")
+    plt.ylabel("Fingerprint Similarity")
+    plt.xlabel("Dot Product")
     tick_spacing = 2
     
     ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
@@ -118,12 +120,13 @@ def create_heatmap(input_panda,x_direction_bin_count,y_direction_bin_count,outpu
             ymax=y_edges[-1],
             colors='w'
         )
-    ax.set_xticks([ (x_edges[i]-(x_edges[1]/2)) for i in range(1,len(x_edges))])
-    ax.set_xticklabels([ (str(1000-i*50+25)) for i in range(1,len(x_edges))],rotation=-90)  
+    ax.set_xticks([ (x_edges[i]-(x_edges[1]/2)) for i in range(2,len(x_edges),2)])
+    ax.set_xticklabels([ (str(1000-i*50+25)) for i in range(2,len(x_edges),2)],rotation=-90)  
     fig.colorbar(image, cax=cax, orientation="vertical",label='Percentage of Compounds')
     #######
     
     #plt.show()
+    plt.tight_layout()
     plt.savefig(output_address)
 
 if __name__=="__main__":

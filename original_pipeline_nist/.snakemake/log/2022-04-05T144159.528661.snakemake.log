@@ -1,0 +1,21 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	create_pareto_plot
+	1
+Select jobs to execute...
+
+[Tue Apr  5 14:41:59 2022]
+rule create_pareto_plot:
+    input: ../../../results/[M+H]+/hcd/precursor_no/cfmid-collision_[M+H]+_hcd_precursor_no.txt
+    output: ../../../results/[M+H]+/hcd/precursor_no/pareto_plot_[M+H]+_hcd_precursor_no.html
+    jobid: 0
+    wildcards: adduct=[M+H]+, instrument=hcd, precursor_status=precursor_no
+
+[Tue Apr  5 14:42:04 2022]
+Finished job 0.
+1 of 1 steps (100%) done
+Complete log: /home/rictuar/coding_projects/fiehn_work/cfmid/cfmid_redo/workflow/code/original_pipeline_nist/.snakemake/log/2022-04-05T144159.528661.snakemake.log

@@ -23,15 +23,17 @@ def make_heatmap(input_panda,output_address):
     #######
     #transform to percents
     my_histogram=100*my_histogram
-    plt.rcParams['font.size']=18
+    plt.rcParams['font.family']='Arial'
+    plt.rcParams['font.size']=14
     #######
 
     extent = [x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]]
+    fig, ax = plt.subplots(figsize=(6.69292, 6))
     # create figure from out histogram
     fig, ax = plt.subplots()
     divider = make_axes_locatable(ax)
-    plt.title(str('Molar Mass Distribution vs. Dot Product Score'))
-    plt.ylabel("Molar Mass (Da) Distribution")
+    #plt.title(str('Molar Mass Distribution vs. Dot Product Score'))
+    plt.ylabel("Molar Mass (Da)")
     plt.xlabel("Approximate Dot Product")
     tick_spacing = 2
     ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
@@ -48,8 +50,8 @@ def make_heatmap(input_panda,output_address):
             ymax=y_edges[-1],
             colors='w'
         )
-    ax.set_xticks([ (x_edges[i]-(x_edges[1]/2)) for i in range(1,len(x_edges))])
-    ax.set_xticklabels([ (str(1000-i*50+25)) for i in range(1,len(x_edges))],rotation=-90)  
+    ax.set_xticks([ (x_edges[i]-(x_edges[1]/2)) for i in range(2,len(x_edges),2)])
+    ax.set_xticklabels([ (str(1000-i*50+25)) for i in range(2,len(x_edges),2)],rotation=-90)  
     fig.colorbar(image, cax=cax, orientation="vertical",label='Percentage of Compounds')
     #######
 
