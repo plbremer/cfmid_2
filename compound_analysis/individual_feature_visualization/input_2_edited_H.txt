@@ -1,0 +1,22 @@
+associated_with	bit_number	bit_description
+good	185	at least 2 rings of size 6
+good	333	C(~C)(~C)(~C)
+good	345	C(~C)(~N) 
+good	356	C(~C)(:C)(:C)
+good	365	C(~N)
+good	430	C(-C)(-C)(=C)
+good	516	[#1]-C=C-[#1]
+good	540	C-N-C-[#1]
+good	688	C-C:C-C-C
+good	708	C-C(C)-C-C
+good	709	C-C(C)-C-C-C
+good	710	C-C-C(C)-C-C
+bad	19	>= 2 O 
+bad	143	at least 1 ring of size 5
+bad	340	C(~C)(~C)(~N)
+bad	374	Methyl 
+bad	376	C(~N)(:C)
+bad	449	C(-N)(=C)
+bad	545	N-C:C-C
+bad	600	N-C:C:C-C
+bad	665	N-C:C-C-C

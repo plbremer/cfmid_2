@@ -79,24 +79,24 @@ def make_heatmap(input_panda,y_direction_bin_count,output_address):
 
     fig.colorbar(image, cax=cax, orientation="vertical",label='Percentage of Compounds')
     plt.tight_layout()
-    #plt.show()
+    plt.show()
 
-    output_address=base_output_path+f'heatmap_{adduct}_{instrument}.png'
-    plt.savefig(output_address)
-    output_address=base_output_path+f'heatmap_{adduct}_{instrument}.eps'
-    plt.savefig(output_address)
+    # output_address=base_output_path+f'heatmap_{adduct}_{instrument}.png'
+    # plt.savefig(output_address)
+    # output_address=base_output_path+f'heatmap_{adduct}_{instrument}.eps'
+    # plt.savefig(output_address)
     
 
 
 if __name__ == "__main__":
-    # max_eV=45
-    # y_direction_bin_count=44
-    # adduct='[M+H]+'
-    # instrument='qtof'
-    max_eV=70
-    y_direction_bin_count=30
+    max_eV=45
+    y_direction_bin_count=44
     adduct='[M+H]+'
-    instrument='hcd'
+    instrument='qtof'
+    # max_eV=70
+    # y_direction_bin_count=30
+    # adduct='[M+H]+'
+    # instrument='hcd'
     starting_file_address=f"../../../results/{adduct}/{instrument}/precursor_no/cfmid-collision_{adduct}_{instrument}_precursor_no.txt"
     base_output_path='../../../results/energy_exploration/overall_heatmapped/'
     

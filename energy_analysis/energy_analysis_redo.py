@@ -230,20 +230,20 @@ def make_population_insert(bin_population_list,output_base,adduct,instrument,ins
 
 if __name__ == "__main__":
 
-    bin_count=44
-    adduct='[M+H]+'
-    instrument='qtof'
-    instrument_brand='junk'
-    use_entries_with_eV='junk'
-    put_eV_on_x_axis='junk'
-
-    # bin_count=200
+    # bin_count=44
     # adduct='[M+H]+'
-    # instrument='hcd'
-    # #instrument_brand='Orbitrap_Fusion_Lumos'
-    # instrument_brand='Thermo_Finnigan_Elite_Orbitrap'
-    # use_entries_with_eV=True
-    # put_eV_on_x_axis=True
+    # instrument='qtof'
+    # instrument_brand='junk'
+    # use_entries_with_eV='junk'
+    # put_eV_on_x_axis='junk'
+
+    bin_count=200
+    adduct='[M+H]+'
+    instrument='hcd'
+    #instrument_brand='Orbitrap_Fusion_Lumos'
+    instrument_brand='Thermo_Finnigan_Elite_Orbitrap'
+    use_entries_with_eV=True
+    put_eV_on_x_axis=True
 
     # bin_count=int(sys.argv[1])
     # adduct=sys.argv[2]
@@ -289,6 +289,11 @@ if __name__ == "__main__":
             use_entries_with_eV,
             put_eV_on_x_axis
             )
+
+        #to see number of spectra times 3
+        print(input_panda)
+        hold=input('hold')
+
         edges=bin_column(input_panda,new_collision_energy_name,bin_count)
         bin_value_list,bin_population_list=get_average_of_bin_column(input_panda,new_collision_energy_name,bin_count,cfmid_energy)
 
