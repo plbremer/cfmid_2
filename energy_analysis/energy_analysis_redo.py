@@ -112,7 +112,8 @@ def make_energy_average_figure(label_list,list_of_averages,hist_labels,output_ba
     if instrument=='qtof' and adduct=='[M+H]+':
         matplotlib.pyplot.xlabel('Experimental Collision Energies (eV)')
     elif instrument=='hcd' and adduct=='[M+H]+':
-        matplotlib.pyplot.xlabel('Experimental Collision Energies (eV)\n Precursor (m/z) × %NCE')
+        #matplotlib.pyplot.xlabel('Experimental Collision Energies (eV)')
+        matplotlib.pyplot.xlabel('Precursor Mass (Da) × %NCE')
     matplotlib.pyplot.ylabel('Average Dot Product')
 
     if instrument=='qtof' and adduct=='[M+H]+':
@@ -174,16 +175,26 @@ def make_energy_average_figure(label_list,list_of_averages,hist_labels,output_ba
         my_axes.set_xticks([ bins[i]-offset for i in range(0,len(bins)-1) ])
         my_axes.set_xticklabels(x_labels)#,rotation=-90)
     elif instrument=='hcd' and adduct=='[M+H]+':
-        x_labels=[' ' for i in range((50))]
-        x_labels[0]='1'
-        x_labels[7]='10'
-        x_labels[14]='20'
-        x_labels[28]='40'
-        x_labels[35]='50'
-        x_labels[49]='70'
+        #x_labels=[' ' for i in range((50))]
+        #x_labels[0]='1'
+        #x_labels[7]='10'
+        #x_labels[14]='20'
+        #x_labels[28]='40'
+        #x_labels[35]='50'
+        #x_labels[49]='70'
         
+        #by manually looking at the image with all 50, we can come up with the ranges
+        #that we need, for example, x_labels[0] needs 64 to 916. we take the middle (average) of each
+        x_labels=[' ' for i in range((50))]
+        x_labels[0]='490'
+        x_labels[7]='5,529'
+        x_labels[14]='10,497'
+        x_labels[28]='20,788'
+        x_labels[35]='25,401'
+        x_labels[49]='35,337'
         my_axes.set_xticks([ bins[i]-offset for i in range(0,len(bins)-1) ])
-        my_axes.set_xticklabels(x_labels)
+        my_axes.set_xticklabels(x_labels,rotation=-90)
+        
         #my_axes.set_xticklabels(hist_labels[0:50],rotation=-90) 
     
 
@@ -243,7 +254,7 @@ if __name__ == "__main__":
     #instrument_brand='Orbitrap_Fusion_Lumos'
     instrument_brand='Thermo_Finnigan_Elite_Orbitrap'
     use_entries_with_eV=True
-    put_eV_on_x_axis=True
+    put_eV_on_x_axis=False
 
     # bin_count=int(sys.argv[1])
     # adduct=sys.argv[2]
@@ -292,7 +303,7 @@ if __name__ == "__main__":
 
         #to see number of spectra times 3
         print(input_panda)
-        hold=input('hold')
+        #hold=input('hold')
 
         edges=bin_column(input_panda,new_collision_energy_name,bin_count)
         bin_value_list,bin_population_list=get_average_of_bin_column(input_panda,new_collision_energy_name,bin_count,cfmid_energy)
